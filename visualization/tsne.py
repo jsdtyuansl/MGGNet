@@ -7,13 +7,13 @@ import pandas as pd
 from dataset import MyDataset
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-from model.MGGNet import Tdm_Net
+from model.MGGNet import MGGNet
 from torch_geometric.data import Batch, DataLoader
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 if __name__ == '__main__':
-    model = Tdm_Net(256).to(device)
+    model = MGGNet(256).to(device)
     ckpt = "./pretrain/epoch-526, val_mae-0.8912, val_rmse-1.1692, val_pr-0.7750.pt"
     model.load_state_dict(torch.load(ckpt))
 
@@ -134,8 +134,6 @@ if __name__ == '__main__':
 
 
 
-
-
     # for data in test2016_loader:
     #     data = set_device(data, device)
     #     label = data[0].y.cpu().numpy()
@@ -167,16 +165,6 @@ if __name__ == '__main__':
     # plt.gca().yaxis.set_ticks_position('none')
     # plt.savefig("./result/epoch526_two_test.png", dpi=600)
     # plt.show()
-
-
-
-
-
-
-
-
-
-
 
 
     hook2 = UseHook(model, model.ligandnet.attention)
