@@ -2,7 +2,7 @@ from torch_geometric.data import DataLoader
 import os
 from dataset import MyDataset
 from utils.utils import *
-from model.MGGNet import Tdm_Net
+from model.MGGNet import MGGNet
 
 
 def val(model, val_loader, device):
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     device = torch.device("cuda")
     print("loading dataset...")
 
-    model = Tdm_Net(256).to(device)
+    model = MGGNet(256).to(device)
     model.load_state_dict(torch.load(
         "./output/20240902_142533_TdmNet/model/epoch-512, val_mae-0.9029, val_rmse-1.1749, val_pr-0.7755.pt"))
 
