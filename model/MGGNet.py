@@ -1,27 +1,23 @@
 import torch
 import torch.nn as nn
-from torch_geometric.nn import EdgeConv, CGConv, HeteroConv, Linear, SAGEConv, GATConv, global_max_pool, MLP, \
-    AttentiveFP, global_mean_pool, BatchNorm, HANConv, HGTConv, GCN, HEATConv, GlobalAttention
-from model.ComMNet import *
 from torch_geometric.nn import global_add_pool
-from model.HomoNet import HomoNet
+from model.HILNet import HILNet
 from model.HeteroNet import HeteroNet
-from model.DimeNetPP import Q_DimeNetPP
-from .xKAN.FastKAN import FastKANLayer
+from model.HomoNet import HomoNet
 
 
-class Tdm_Net(nn.Module):
+class MGGNet(nn.Module):
     def __init__(self, hidden_channels):
         super().__init__()
 
-        # self.ligandnet = HomoNet(in_channels=44, hidden_channels=256, out_channels=256)
-        self.ligandnet = Q_DimeNetPP(in_channels=44, hidden_channels=hidden_channels, out_channels=256)
+        # self.ligandnet = HILNet(in_channels=44, hidden_channels=256, out_channels=256)
+        self.ligandnet = HomoNet(in_channels=44, hidden_channels=hidden_channels, out_channels=256)
 
         # self.proteinnet = AttentiveFP(in_channels=44, hidden_channels=256, out_channels=256, edge_dim=12,
         #                               num_timesteps=3,
         #                               num_layers=3)
-        self.proteinnet = Q_DimeNetPP(in_channels=44, hidden_channels=hidden_channels, out_channels=256)
-        # self.proteinnet = HomoNet(in_channels=44, hidden_channels=256, out_channels=256)
+        self.proteinnet = HomoNet(in_channels=44, hidden_channels=hidden_channels, out_channels=256)
+        # self.proteinnet = HILNet(in_channels=44, hidden_channels=256, out_channels=256)
 
         self.complexnet = HeteroNet(edge_dim=1, hidden_channels=hidden_channels, out_channels=256)
         self.fusion_lin = nn.Linear(3 * 256, hidden_channels)

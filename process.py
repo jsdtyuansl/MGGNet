@@ -68,7 +68,7 @@ if __name__ == '__main__':
     cut = 5
     data_root = './data'
 
-    for set_name in ['test2016']:
+    for set_name in ['draw_set']:
         data_dir = os.path.join(data_root, set_name)
         data_df = pd.read_csv(os.path.join(data_root, f'{set_name}.csv'))
         generate_file(data_dir, data_df, cut=cut)

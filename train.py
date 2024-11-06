@@ -12,7 +12,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from log.train_logger import TrainLogger
 from utils.utils import *
 from dataset import MyDataset
-from model.TdmNet import Tdm_Net
+from model.MGGNet import MGGNet
 
 seed = 42
 torch.cuda.manual_seed(seed)
@@ -25,7 +25,7 @@ def train(train_loader, val_loader, test_set):
     args = parse_arguments()
     logger = TrainLogger(args, create=True)
 
-    model = Tdm_Net(256).to(device)
+    model = MGGNet(256).to(device)
     loss_func = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=5e-4, weight_decay=5e-6)
 
@@ -36,7 +36,7 @@ def train(train_loader, val_loader, test_set):
     best_path = ''
     model.train()
 
-    for epoch in range(700):
+    for epoch in range(500):
         loss_epoch = 0
         train_num = 0
         for step, data in enumerate(train_loader):
@@ -95,7 +95,7 @@ def test(test_set, model_file):
     p_list = []
     y_list = []
     m_state_dict = torch.load(model_file)
-    best_model = Tdm_Net(256).to(device)
+    best_model = MGGNet(256).to(device)
     best_model.load_state_dict(m_state_dict)
     test_loader = DataLoader(dataset=test_set, batch_size=128, shuffle=False)
     best_model.eval()
@@ -133,15 +133,6 @@ if __name__ == '__main__':
     batch_size = args.batch_size
     epochs = args.epochs
 
-    # train_loader = DataLoader(dataset=train_set, batch_size=256, shuffle=True, pin_memory=True)
-    # val_loader = DataLoader(dataset=val_set, batch_size=256, shuffle=False, pin_memory=True)
-    #
-    # # train_loader, val_loader = k_fold(train_set,seed,k=5,select=4,batch_size=32)
-    #
-    # if not os.path.exists(save_path):
-    #     os.makedirs(save_path)
-    #
-    # train(train_loader, val_loader, test_set)
 
     for repeat in range(1):
         print("loading dataset...")

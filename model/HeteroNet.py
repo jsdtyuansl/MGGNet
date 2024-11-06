@@ -31,7 +31,7 @@ class HeteroNet(torch.nn.Module):
         )
         self.conv_3 = HeteroConv(
             {
-                #///123
+                # ///123
                 edge_type: NConv(hidden_channels, hidden_channels) for edge_type in self.metadata
             }
         )
@@ -75,10 +75,7 @@ class HeteroNet(torch.nn.Module):
 
 
 class NConv(MessagePassing):
-    def __init__(self,
-                 in_channels: int,
-                 out_channels: int,
-                 bias=True):
+    def __init__(self, in_channels: int, out_channels: int, bias=True):
         super(NConv, self).__init__(aggr='mean')
 
         self.in_channels = in_channels

@@ -230,7 +230,7 @@ def generate_graphs(set_dir, process_dir, set_name, cut: int):
 
 
 if __name__ == '__main__':
-    for set_name in ['train', 'valid', 'test2013', 'test2016']:
+    for set_name in ['draw_set']:
         data_root = './data'
         set_dir = os.path.join(data_root, set_name)
         generate_graphs(set_dir, process_dir='./data/processed', set_name=set_name, cut=5)

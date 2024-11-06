@@ -2,7 +2,7 @@ from torch_geometric.data import DataLoader
 import os
 from dataset import MyDataset
 from utils.utils import *
-from model.TdmNet import Tdm_Net
+from model.MGGNet import Tdm_Net
 
 
 def val(model, val_loader, device):

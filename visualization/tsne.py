@@ -7,7 +7,7 @@ import pandas as pd
 from dataset import MyDataset
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-from model.TdmNet import Tdm_Net
+from model.MGGNet import Tdm_Net
 from torch_geometric.data import Batch, DataLoader
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -28,19 +28,6 @@ if __name__ == '__main__':
     train_loader = DataLoader(train_set, batch_size=128, shuffle=True)
     test2016_loader = DataLoader(test2016_set, batch_size=1, shuffle=False)
 
-    activation = {}  ## 保存不同层的输出
-
-    def get_activation(name):
-        def hook(model, input, output):
-            activation[name] = output.detach()
-        return hook
-
-
-    ## 全连接网络获取第一个全连接层的输出
-    # model.classifica.register_forward_hook(get_activation("classifica"))
-    # _, _, _ = mlpc()
-    # classifica = activation["classifica"].data.numpy()
-    # print("classifica.shape:", classifica.shape)
 
     def set_device(data, device):
         data_device = []
@@ -54,16 +41,18 @@ if __name__ == '__main__':
 
 
     # 创建一个 t-SNE 模型并将数据降维到 2 维
-    def tsne(title: str, feats, color, cmap=None, vmin=None, vmax=None):
-        tsne = TSNE(n_components=2, perplexity=30, early_exaggeration=20, random_state=42)
+    def tsne(title: str, feats, c, cmap=None, vmin=None, vmax=None):
+        tsne = TSNE(n_components=2, perplexity=30,early_exaggeration=20, random_state=42)
         tsne_result = tsne.fit_transform(feats)
         plt.figure(figsize=(10, 6))
-        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], marker='o', s=70, c=color, cmap=cmap, vmin=vmin,
+        plt.scatter(tsne_result[:, 0], tsne_result[:, 1], marker='o', s=70, c=c, cmap=cmap, vmin=vmin,
                     vmax=vmax)
 
         # 显示坐标轴边框
         plt.gca().xaxis.set_ticks_position('none')
         plt.gca().yaxis.set_ticks_position('none')
+        plt.gca().set_xticklabels([])
+        plt.gca().set_yticklabels([])
         plt.savefig(title, dpi=600)
         plt.show()
 
@@ -97,10 +86,10 @@ if __name__ == '__main__':
 
 
     # print(model.complexnet)
-    hook = UseHook(model, model.out.predict[6])
+    hook1 = UseHook(model, model.out.predict[6])
     hook2 = UseHook(model, model.ligandnet)
     hook3 = UseHook(model, model.proteinnet)
-    hook4 = UseHook(model, model.complexnet)
+
 
     random.seed(42)
     random_index = list(range(0, 11899))
@@ -109,14 +98,44 @@ if __name__ == '__main__':
     feats_hook1 = []
     feats_hook2 = []
     feats_hook3 = []
-    feats_hook4 = []
+
     feats_hook5 = []
     affinity = []
 
-    # data_list = train_set.get_by_idx(index_list)
-    # sample_data = MyDataset("list", data_list)
-    # loader = DataLoader(dataset=sample_data, batch_size=1)
+    data_list = train_set.get_by_idx(index_list)
+    sample_data = MyDataset("list", data_list)
+    loader = DataLoader(dataset=sample_data, batch_size=1)
+
+    for data in loader:
+        data = set_device(data, device)
+        label = data[0].y.cpu().numpy()
+        feats_hook1.append(hook1(data))
+        affinity.append(label)
+    arr1 = np.array(feats_hook1)
+
+    print(arr1)
+    affinity = np.array(affinity).reshape(-1)
+    affinity = normalize(affinity)
+
+    tsne("./result/tsne_epoch526.png", arr1, c=affinity, cmap='coolwarm', vmin=0, vmax=1)
+
+    # tsne = TSNE(n_components=2, perplexity=30, early_exaggeration=20, random_state=42)
+    # tsne_result = tsne.fit_transform(feats)
+    # plt.figure(figsize=(10, 6))
+    # plt.scatter(tsne_result[:285, 0], tsne_result[:285, 1], marker='o', s=70, c="cyan")
+    # plt.scatter(tsne_result[285:, 0], tsne_result[285:, 1], marker='o', s=70, c="yellow")
     #
+    # # 显示坐标轴边框
+    # plt.gca().xaxis.set_ticks_position('none')
+    # plt.gca().yaxis.set_ticks_position('none')
+    # plt.savefig("./result/epoch526_two_test.png", dpi=600)
+    # plt.show()
+
+
+
+
+
+
     # for data in test2016_loader:
     #     data = set_device(data, device)
     #     label = data[0].y.cpu().numpy()
@@ -131,12 +150,12 @@ if __name__ == '__main__':
     # feats = np.vstack((arr1, arr2))
     #
     # print(feats.shape)
-
+    #
     # affinity = np.array(affinity).reshape(-1)
     # affinity = normalize(affinity)
-
-    # tsne("./result/tsne_epoch526.png", feats_in_hook, color='coolwarm', cmap=affinity, vmin=0, vmax=1)
-
+    #
+    # tsne("./result/tsne_epoch526.png", feats, color='coolwarm', cmap=affinity, vmin=0, vmax=1)
+    #
     # tsne = TSNE(n_components=2, perplexity=30, early_exaggeration=20, random_state=42)
     # tsne_result = tsne.fit_transform(feats)
     # plt.figure(figsize=(10, 6))
@@ -148,6 +167,17 @@ if __name__ == '__main__':
     # plt.gca().yaxis.set_ticks_position('none')
     # plt.savefig("./result/epoch526_two_test.png", dpi=600)
     # plt.show()
+
+
+
+
+
+
+
+
+
+
+
 
     hook2 = UseHook(model, model.ligandnet.attention)
     hook3 = UseHook(model, model.proteinnet.attention)

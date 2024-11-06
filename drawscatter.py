@@ -17,6 +17,9 @@ def plot_scatter_with_regression(x, y, color, label, ax, x_seq, regression_param
 
 
 if __name__ == '__main__':
+    fontname = 'Times New Roman'
+
+
     # 读取数据
     data1 = pd.read_csv("./picture/test_core2013.csv")
     data2 = pd.read_csv("./picture/test_core2016.csv")
@@ -38,42 +41,48 @@ if __name__ == '__main__':
     # 创建图表1
     fig, ax = plt.subplots(figsize=(6, 6))
     x_seq = np.linspace(x_min, x_max, num=100)
-    plot_scatter_with_regression(x1, y1, 'blue', 'core v2013', ax, x_seq, np.polyfit(x1, y1, deg=1))
-    plot_scatter_with_regression(x2, y2, 'lightblue', 'core v2016', ax, x_seq, np.polyfit(x2, y2, deg=1))
-    ax.set_xlabel('True', fontsize=12)
-    ax.set_ylabel('Prediction', fontsize=12)
+    plot_scatter_with_regression(x1, y1, 'blue', 'core_v2013', ax, x_seq, np.polyfit(x1, y1, deg=1))
+    plot_scatter_with_regression(x2, y2, 'lightblue', 'core_v2016', ax, x_seq, np.polyfit(x2, y2, deg=1))
+    ax.set_xlabel('True', fontsize=12,fontname=fontname)
+    ax.set_ylabel('Prediction', fontsize=12,fontname=fontname)
+    plt.setp(ax.get_yticklabels(), fontsize=12, fontname=fontname)
+    plt.setp(ax.get_xticklabels(), fontsize=12, fontname=fontname)
     ax.tick_params(width=0.5, size=3)
     for spine in ax.spines.values():
         spine.set_linewidth(0.5)
     set_axes_limits(ax, x_min, x_max, y_min, y_max)
-    ax.legend(loc='upper left')
-    plt.savefig("./picture/scatter_plot_combined.tif", dpi=300, bbox_inches='tight')
+    ax.legend(loc='upper left',fontsize=10, prop={'family': 'Times New Roman'})
+    plt.savefig("./picture/scatter_plot_combined.tif", dpi=600, bbox_inches='tight')
     plt.show()
 
     # 创建图表2
     fig, ax = plt.subplots(figsize=(6, 6))
     x_seq = np.linspace(x_min, x_max, num=100)
     plot_scatter_with_regression(x3, y3, 'lightblue', 'training set', ax, x_seq, np.polyfit(x3, y3, deg=1))
-    ax.set_xlabel('True', fontsize=12)
-    ax.set_ylabel('Prediction', fontsize=12)
+    ax.set_xlabel('True', fontsize=12,fontname=fontname)
+    ax.set_ylabel('Prediction', fontsize=12,fontname=fontname)
+    plt.setp(ax.get_yticklabels(), fontsize=12, fontname=fontname)
+    plt.setp(ax.get_xticklabels(), fontsize=12, fontname=fontname)
     ax.tick_params(width=0.5, size=3)
     for spine in ax.spines.values():
         spine.set_linewidth(0.5)
     set_axes_limits(ax, x_min, x_max, y_min, y_max)
-    ax.legend(loc='upper left')
-    plt.savefig("./picture/scatter_plot_train2016.tif", dpi=300, bbox_inches='tight')
+    ax.legend(loc='upper left',fontsize=10, prop={'family': 'Times New Roman'})
+    plt.savefig("./picture/scatter_plot_train2016.tif", dpi=600, bbox_inches='tight')
     plt.show()
 
     # 创建图表3
     fig, ax = plt.subplots(figsize=(6, 6))
     x_seq = np.linspace(x_min, x_max, num=100)
     plot_scatter_with_regression(x4, y4, 'lightblue', 'validation set', ax, x_seq, np.polyfit(x4, y4, deg=1))
-    ax.set_xlabel('True', fontsize=12)
-    ax.set_ylabel('Prediction', fontsize=12)
+    ax.set_xlabel('True', fontsize=12,fontname=fontname)
+    ax.set_ylabel('Prediction', fontsize=12,fontname=fontname)
+    plt.setp(ax.get_yticklabels(), fontsize=12, fontname=fontname)
+    plt.setp(ax.get_xticklabels(), fontsize=12, fontname=fontname)
     ax.tick_params(width=0.5, size=3)
     for spine in ax.spines.values():
         spine.set_linewidth(0.5)
     set_axes_limits(ax, x_min, x_max, y_min, y_max)
-    ax.legend(loc='upper left')
-    plt.savefig("./picture/scatter_plot_val2016.tif", dpi=300, bbox_inches='tight')
+    ax.legend(loc='upper left',fontsize=10, prop={'family': 'Times New Roman'})
+    plt.savefig("./picture/scatter_plot_val2016.tif", dpi=600, bbox_inches='tight')
     plt.show()

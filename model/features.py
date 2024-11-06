@@ -9,7 +9,6 @@ from math import pi as PI
 import sympy as sym
 
 
-
 def Jn(r, n):
     return np.sqrt(np.pi / (2 * r)) * sp.jv(n + 0.5, r)
 
@@ -142,31 +141,11 @@ def real_sph_harm(k, zero_m_only=True, spherical_coordinates=True):
 
     return Y_func_l_m
 
-
-class Envelope(torch.nn.Module):
-    def __init__(self, exponent):
-        super(Envelope, self).__init__()
-        self.p = exponent + 1
-        self.a = -(self.p + 1) * (self.p + 2) / 2
-        self.b = self.p * (self.p + 2)
-        self.c = -self.p * (self.p + 1) / 2
-
-    def forward(self, x):
-        p, a, b, c = self.p, self.a, self.b, self.c
-        x_pow_p0 = x.pow(p - 1)
-        x_pow_p1 = x_pow_p0 * x
-        x_pow_p2 = x_pow_p1 * x
-        return 1. / x + a * x_pow_p0 + b * x_pow_p1 + c * x_pow_p2
-
-
 class dist_emb(torch.nn.Module):
-    def __init__(self, num_radial, cutoff=5.0, envelope_exponent=5):
+    def __init__(self, num_radial, cutoff=5.0):
         super(dist_emb, self).__init__()
         self.cutoff = cutoff
-        self.envelope = Envelope(envelope_exponent)
-
         self.freq = torch.nn.Parameter(torch.Tensor(num_radial))
-
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -174,18 +153,16 @@ class dist_emb(torch.nn.Module):
 
     def forward(self, dist):
         dist = dist.unsqueeze(-1) / self.cutoff
-        return self.envelope(dist) * (self.freq * dist).sin()
+        return (self.freq * dist).sin()
 
 
 class angle_emb(torch.nn.Module):
-    def __init__(self, num_spherical, num_radial, cutoff=5.0,
-                 envelope_exponent=5):
+    def __init__(self, num_spherical, num_radial, cutoff=5.0):
         super(angle_emb, self).__init__()
         assert num_radial <= 64
         self.num_spherical = num_spherical
         self.num_radial = num_radial
         self.cutoff = cutoff
-        self.envelope = Envelope(envelope_exponent)
 
         bessel_forms = bessel_basis(num_spherical, num_radial)
         sph_harm_forms = real_sph_harm(num_spherical)
@@ -208,10 +185,7 @@ class angle_emb(torch.nn.Module):
     def forward(self, dist, angle, idx_kj):
         dist = dist / self.cutoff
         rbf = torch.stack([f(dist) for f in self.bessel_funcs], dim=1)
-        rbf = self.envelope(dist).unsqueeze(-1) * rbf
-
         cbf = torch.stack([f(angle) for f in self.sph_funcs], dim=1)
-
         n, k = self.num_spherical, self.num_radial
         out = (rbf[idx_kj].view(-1, n, k) * cbf.view(-1, n, 1)).view(-1, n * k)
         return out
