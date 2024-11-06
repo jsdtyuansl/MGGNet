@@ -109,12 +109,12 @@ def test(test_set, model_file):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='TdmNet')
-    parser.add_argument('--model', default="TdmNet", help='Where is the raw data')
+    parser = argparse.ArgumentParser(description='MGGNet')
+    parser.add_argument('--model', default="MGGNet", help='Where is the raw data')
     parser.add_argument('--data_root', default="./data/processed", help='Where is the raw data')
     parser.add_argument('--save_dir', default="./output", help="Where to save the result")
     parser.add_argument('--save_model', default=True, help='Save the model or not')
-    parser.add_argument('--epochs', default=600, help="Train epochs")
+    parser.add_argument('--epochs', default=500, help="Train epochs")
     parser.add_argument('--batch_size', type=int, default=128, help='Batch size')
     parser.add_argument('--hidden_dim', type=int, default=256, help='Hidden dimension')
     parser.add_argument('--dropout', type=float, default=0.1, help='Dropout rate')
