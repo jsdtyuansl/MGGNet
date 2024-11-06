@@ -19,7 +19,6 @@ torch.cuda.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
 def train(train_loader, val_loader, test_set):
     print('start training...')
     args = parse_arguments()
